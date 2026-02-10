@@ -1,0 +1,207 @@
+\documentclass[11pt]{article}
+
+
+% ------------------------------------------------
+% Packages
+% ------------------------------------------------
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{graphicx}
+\usepackage{cite}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage[left=0.9in,right=0.9in,top=1in,bottom=1in]{geometry}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue
+}
+
+% ------------------------------------------------
+% Theorem Environments
+% ------------------------------------------------
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{remark}{Remark}
+
+% ------------------------------------------------
+% Title (Keep it clear, not fancy)
+% ------------------------------------------------
+\title{Proposal: Reinforcement Learning for xGame}
+\author{Melissa Osheroff, Tien Nguyen, Raaghav Thirumaligai}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+% ------------------------------------------------
+% Abstract
+% ------------------------------------------------
+\begin{abstract}
+Brief description of the problem addressed.
+
+Statement of the main result.
+
+Key conclusion or implication.
+
+Optional mention of application or numerical illustration.
+
+% Avoid citations, equations, and references here.
+\end{abstract}
+
+% =================================================
+\section{Introduction}
+% =================================================
+
+% Paragraph 1: Problem description
+Brief description of the problem and context.
+
+% Paragraph 2: Literature review (short version)
+Discussion of related work and positioning within the literature.
+
+% Paragraph 3: Contribution
+The main contribution of this paper is:
+\begin{itemize}
+    \item Contribution 1
+    \item Contribution 2
+\end{itemize}
+
+% Final paragraph: Organization
+The remainder of this paper is organized as follows.
+Section~\ref{sec:related} discusses related work.
+Section~\ref{sec:problem} formulates the problem.
+Section~\ref{sec:main} presents the main result.
+Section~\ref{sec:discussion} discusses consequences.
+Section~\ref{sec:proofs} provides proofs.
+Section~\ref{sec:examples} presents applications.
+Section~\ref{sec:conclusion} concludes the paper.
+
+\paragraph*{Notation}
+Define notation only if widely used. Otherwise introduce symbols when needed.
+
+% =================================================
+\section{Related Work}
+\label{sec:related}
+% =================================================
+
+Organize into paragraphs by topic or chronology.
+
+Be fair and avoid overselling your contribution.
+
+% =================================================
+\section{Problem Statement}
+\label{sec:problem}
+% =================================================
+
+\subsection*{System Description}
+Describe the process/system and define state variables.
+
+\subsection*{Actuation Mechanism}
+Describe input/control variables and dynamics:
+\begin{equation}
+    \dot{x} = f(x,u,w)
+\end{equation}
+
+\subsection*{Sensing Mechanism}
+Define outputs:
+\begin{equation}
+    y = h(x)
+\end{equation}
+
+\subsection*{Objective}
+Design a controller/algorithm that achieves:
+\begin{equation}
+    \text{Minimize } J(x,u)
+\end{equation}
+subject to system constraints.
+
+Include a figure here if helpful and refer to it explicitly.
+
+% =================================================
+\section{Main Result}
+\label{sec:main}
+% =================================================
+
+State the main result clearly and early.
+
+\begin{theorem}[Main Stability Result]
+Consider the system defined in Section~\ref{sec:problem}.
+Assume:
+\begin{enumerate}
+    \item Assumption 1
+    \item Assumption 2
+\end{enumerate}
+Then, for all admissible initial conditions,
+\begin{equation}
+    \lim_{t \to \infty} x(t) = 0.
+\end{equation}
+\end{theorem}
+
+\begin{remark}[Interpretation]
+Provide insight into what the result means.
+\end{remark}
+
+Avoid cluttering this section with long proofs.
+
+% =================================================
+\section{Discussion}
+\label{sec:discussion}
+% =================================================
+
+Discuss special cases, corollaries, or implications.
+
+\begin{corollary}
+State meaningful corollaries only.
+\end{corollary}
+
+% =================================================
+\section{Proofs}
+\label{sec:proofs}
+% =================================================
+
+\begin{proof}[Proof of Theorem 1]
+Provide clear reasoning.
+Avoid phrases like “Clearly” or “It is obvious”.
+\end{proof}
+
+% =================================================
+\section{Applications and Examples}
+\label{sec:examples}
+% =================================================
+
+Illustrate how the result is used in practice.
+
+Include simulations only if they provide insight.
+
+If randomness is involved:
+\begin{itemize}
+    \item Use Monte Carlo runs
+    \item Report averages and confidence intervals
+\end{itemize}
+
+% =================================================
+\section{Conclusions and Future Work}
+\label{sec:conclusion}
+% =================================================
+
+% Paragraph 1: Summary
+Summarize the main result and contribution.
+
+% Paragraph 2: Future work
+Discuss open problems and future directions.
+
+% =================================================
+\appendix
+\section{Technical Lemmas}
+
+Place secondary technical results here if needed.
+
+% =================================================
+\bibliographystyle{ieeetr}
+\bibliography{references}
+
+\end{document}
