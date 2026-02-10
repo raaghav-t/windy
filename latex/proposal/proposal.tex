@@ -18,19 +18,8 @@
     urlcolor=blue
 }
 
-% ------------------------------------------------
-% Theorem Environments
-% ------------------------------------------------
-\newtheorem{theorem}{Theorem}
-\newtheorem{lemma}{Lemma}
-\newtheorem{proposition}{Proposition}
-\newtheorem{corollary}{Corollary}
-\newtheorem{remark}{Remark}
 
-% ------------------------------------------------
-% Title (Keep it clear, not fancy)
-% ------------------------------------------------
-\title{Proposal: Reinforcement Learning for xGame}
+\title{Project Proposal: Learning and Equilibrium Analysis in xGame}
 \author{Melissa Osheroff, Tien Nguyen, Raaghav Thirumaligai}
 \date{\today}
 
@@ -41,16 +30,11 @@
 % ------------------------------------------------
 % Abstract
 % ------------------------------------------------
+% ------------------------------------------------
+% Abstract
+% ------------------------------------------------
 \begin{abstract}
-Brief description of the problem addressed.
-
-Statement of the main result.
-
-Key conclusion or implication.
-
-Optional mention of application or numerical illustration.
-
-% Avoid citations, equations, and references here.
+This project proposes to study strategic behavior and learning dynamics in xGame using tools from noncooperative game theory and reinforcement learning. We aim to formally model the game, analyze its equilibrium structure, and investigate whether learning-based agents converge to Nash equilibria under repeated play. The project will combine analytical results with computational experiments to better understand strategic adaptation and performance.
 \end{abstract}
 
 % =================================================
@@ -121,86 +105,57 @@ subject to system constraints.
 
 Include a figure here if helpful and refer to it explicitly.
 
+
 % =================================================
-\section{Main Result}
-\label{sec:main}
+\section{Proposed Approach}
 % =================================================
 
-State the main result clearly and early.
+We propose the following steps:
 
-\begin{theorem}[Main Stability Result]
-Consider the system defined in Section~\ref{sec:problem}.
-Assume:
 \begin{enumerate}
-    \item Assumption 1
-    \item Assumption 2
+    \item \textbf{Formal Modeling:} Define xGame in normal-form and, if appropriate, extensive-form representation. Identify strategy spaces and payoff functions.
+    \item \textbf{Equilibrium Analysis:} Characterize pure and mixed Nash equilibria. Analyze existence, uniqueness, and structural properties.
+    \item \textbf{Learning Dynamics:} Implement reinforcement learning agents (e.g., Q-learning or policy-gradient methods) and study convergence behavior under repeated play.
+    \item \textbf{Comparative Analysis:} Compare learned strategies with theoretical equilibria and evaluate efficiency and stability.
 \end{enumerate}
-Then, for all admissible initial conditions,
-\begin{equation}
-    \lim_{t \to \infty} x(t) = 0.
-\end{equation}
-\end{theorem}
-
-\begin{remark}[Interpretation]
-Provide insight into what the result means.
-\end{remark}
-
-Avoid cluttering this section with long proofs.
 
 % =================================================
-\section{Discussion}
-\label{sec:discussion}
+\section{Methodology}
 % =================================================
 
-Discuss special cases, corollaries, or implications.
+The analytical portion of the project will rely on standard results from noncooperative game theory, including Nash equilibrium existence theorems and best-response analysis. 
 
-\begin{corollary}
-State meaningful corollaries only.
-\end{corollary}
+The computational portion will involve implementing learning algorithms in Python or MATLAB. We will simulate repeated interactions under varying initializations and learning rates. Performance metrics may include convergence speed, empirical regret, payoff efficiency, and stability of learned strategies.
 
 % =================================================
-\section{Proofs}
-\label{sec:proofs}
+\section{Expected Contributions}
 % =================================================
 
-\begin{proof}[Proof of Theorem 1]
-Provide clear reasoning.
-Avoid phrases like “Clearly” or “It is obvious”.
-\end{proof}
+We expect this project to:
 
-% =================================================
-\section{Applications and Examples}
-\label{sec:examples}
-% =================================================
-
-Illustrate how the result is used in practice.
-
-Include simulations only if they provide insight.
-
-If randomness is involved:
 \begin{itemize}
-    \item Use Monte Carlo runs
-    \item Report averages and confidence intervals
+    \item Provide a rigorous mathematical formulation of xGame.
+    \item Identify and characterize its equilibrium structure.
+    \item Evaluate whether reinforcement learning converges to equilibrium strategies.
+    \item Highlight differences between theoretical predictions and empirical learning outcomes.
 \end{itemize}
 
 % =================================================
-\section{Conclusions and Future Work}
-\label{sec:conclusion}
+\section{Timeline}
 % =================================================
 
-% Paragraph 1: Summary
-Summarize the main result and contribution.
-
-% Paragraph 2: Future work
-Discuss open problems and future directions.
-
-% =================================================
-\appendix
-\section{Technical Lemmas}
-
-Place secondary technical results here if needed.
+\begin{itemize}
+    \item Weeks 1--2: Formal modeling and equilibrium analysis.
+    \item Weeks 3--4: Implementation of learning algorithms.
+    \item Week 5: Simulation experiments and comparative analysis.
+    \item Final Week: Write-up and presentation preparation.
+\end{itemize}
 
 % =================================================
+\section{Conclusion}
+% =================================================
+
+This proposal outlines a structured investigation of strategic interaction and adaptive learning in xGame. By combining equilibrium analysis with reinforcement learning experiments, we aim to bridge theoretical game-theoretic predictions and algorithmic behavior under repeated play.
 \bibliographystyle{ieeetr}
 \bibliography{references}
 
