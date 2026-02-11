@@ -34,18 +34,8 @@
 % Abstract
 % ------------------------------------------------
 \begin{abstract}
-    This project proposes the software implentation of a dynamic program that finds the best outcome for Player 1 in chess endgame. Player 1 has a rook and a king left, whereas Player 2 has only a king. Thus, this is a zero-sum game where Player 1 is trying to checkmate and Player 2 is trying to stalemate. 
+    This project proposes the software implentation of a dynamic program that finds the best outcome for Player 1 in chess endgame. Player 1 has a rook and a king left, whereas Player 2 has only a king. Thus, this is a zero-sum game where Player 1 is trying to checkmate and Player 2 is trying to stalemate. We will start by hard-coding the starting positions for each piece. If easily solvable, we will try to automate the program using defined chess rules to find the most optimal path for random starting positions.
 \end{abstract}
-
-% Final paragraph: Organization
-The remainder of this paper is organized as follows.
-Section~\ref{sec:related} discusses related work.
-Section~\ref{sec:problem} formulates the problem.
-Section~\ref{sec:main} presents the main result.
-Section~\ref{sec:discussion} discusses consequences.
-Section~\ref{sec:proofs} provides proofs.
-Section~\ref{sec:examples} presents applications.
-Section~\ref{sec:conclusion} concludes the paper.
 
 % =================================================
 \section{Problem Statement}
@@ -62,9 +52,9 @@ We want to find the most optimal path to winning a game of chess, given a rook(H
 We propose the following steps:
 
 \begin{enumerate}
-    \item \textbf{Define Action Spaces:} Define the sets of all possible positions for all pieces on the board. 
+    \item \textbf{Define Action Spaces:} Define the sets of all possible positions for all pieces on the board. This will be unique to each turn.  
     \item \textbf{Define Legal Moves:} Restrict action spaces to allow only legal positions (according to chess rules).
-    \item \textbf{Building the Graph:} 
+    \item \textbf{Building the Graph:} The graph will be designed to represent alternating turns between Player 1 and Player 2. Additionally, we will assume that the game stops after each player has completed 50 moves. The end value will be computed as o + 0.01m. o is the outcome and can take values -1, 0 or 1, where -1 represents a stalemate, 0 represents 50 moves were reached, and 1 represents a win. m is the number of moves and can take values [1, 50].
     \item \textbf{Backtracking:} .
 \end{enumerate}
 
@@ -72,4 +62,6 @@ We propose the following steps:
 \bibliographystyle{ieeetr}
 \bibliography{references}
 
+
 \end{document}
+
