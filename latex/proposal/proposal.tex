@@ -84,11 +84,11 @@ We propose the following steps:
     Terminal nodes are classified as checkmate, stalemate, or 50-move termination. 
     The terminal payoff is defined as
     \[
-        J = o - \epsilon m,
+        J = o + \epsilon \, m,
     \]
-    where \( o \in \{-1,0,1\} \) represents stalemate, draw by 50-move rule, or checkmate respectively, 
+    where \( o \in \{1,0,-1\} \) represents stalemate, draw by 50-move rule, or checkmate respectively, 
     \( m \) is the number of moves taken to reach the terminal state, and \( \epsilon > 0 \) is a small weighting parameter to prefer faster mates.
-    \item \textbf{Backtracking:} After all .
+    \item \textbf{Backtracking:} After the graph is computed, find global minima. Then traversing back up the tree will give the optimal set of moves to reach one such minima.
 
 % =================================================
 \section{Cases}
@@ -96,11 +96,21 @@ We propose the following steps:
 
 We distinguish the following terminal cases:
 
-\begin{enumerate}[label=\textbf{Case \arabic*:}]
-    \item \textbf{Checkmate:} Player 1 successfully forces mate. The value of the state is \( +1 \) (adjusted by move penalty).
-    \item \textbf{Stalemate:} Player 2 has no legal moves but is not in check. The value of the state is \( -1 \).
-    \item \textbf{50-Move Rule:} If 50 moves occur without capture or checkmate, the game is declared a draw with value \( 0 \).
-\end{enumerate}
+\begin{center}
+\begin{tabular}{@{} l p{0.75\textwidth} @{}}
+\textbf{Checkmate:} 
+& Player 1 successfully forces mate. The value of the state is \( -1 \) (adjusted by move penalty). \\[0.5em]
+
+\textbf{50-Move Rule:} 
+& If 50 moves occur without capture or checkmate, the game is declared a draw with value \( 0 \). \\[0.5em]
+
+\textbf{Stalemate:} 
+& Player 2 has no legal moves but is not in check. The value of the state is \( +1 \). \\[0.5em]
+
+\textbf{Draw:} 
+& Player 2 captures the rook, the game is over, and neither king can progress. The value of the state is \( +1 \).
+\end{tabular}
+\end{center}
 
 These cases define the boundary conditions for the dynamic programming recursion.
 \end{enumerate}
@@ -111,4 +121,3 @@ These cases define the boundary conditions for the dynamic programming recursion
 
 
 \end{document}
-
