@@ -19,7 +19,7 @@
 }
 
 
-\title{Project Proposal: Learning and Equilibrium Analysis in xGame}
+\title{Dynammic Programming in Rook Endgames}
 \author{Melissa Osheroff, Tien Nguyen, Raaghav Thirumaligai}
 \date{\today}
 
@@ -34,7 +34,7 @@
 % Abstract
 % ------------------------------------------------
 \begin{abstract}
-This project proposes to study strategic behavior and learning dynamics in xGame using tools from noncooperative game theory and reinforcement learning. We aim to formally model the game, analyze its equilibrium structure, and investigate whether learning-based agents converge to Nash equilibria under repeated play. The project will combine analytical results with computational experiments to better understand strategic adaptation and performance.
+    This project proposes the software implentation of a dynamic program that finds the best outcome for Player 1 in chess endgame. Player 1 has a rook and a king left, whereas Player 2 has only a king. Thus, this is a zero-sum game where Player 1 is trying to checkmate and Player 2 is trying to stalemate. 
 \end{abstract}
 
 % =================================================
@@ -64,47 +64,13 @@ Section~\ref{sec:proofs} provides proofs.
 Section~\ref{sec:examples} presents applications.
 Section~\ref{sec:conclusion} concludes the paper.
 
-\paragraph*{Notation}
-Define notation only if widely used. Otherwise introduce symbols when needed.
-
-% =================================================
-\section{Related Work}
-\label{sec:related}
-% =================================================
-
-Organize into paragraphs by topic or chronology.
-
-Be fair and avoid overselling your contribution.
-
 % =================================================
 \section{Problem Statement}
 \label{sec:problem}
 % =================================================
 
 \subsection*{System Description}
-Describe the process/system and define state variables.
-
-\subsection*{Actuation Mechanism}
-Describe input/control variables and dynamics:
-\begin{equation}
-    \dot{x} = f(x,u,w)
-\end{equation}
-
-\subsection*{Sensing Mechanism}
-Define outputs:
-\begin{equation}
-    y = h(x)
-\end{equation}
-
-\subsection*{Objective}
-Design a controller/algorithm that achieves:
-\begin{equation}
-    \text{Minimize } J(x,u)
-\end{equation}
-subject to system constraints.
-
-Include a figure here if helpful and refer to it explicitly.
-
+We want to find the most optimal path to winning a game of chess, given a rook(H1) and a king(A1) against a king(A8). The optimal path is defined as a checkmate occuring before stalemate for Player 1 and occurring with the least amount of moves possible.   
 
 % =================================================
 \section{Proposed Approach}
@@ -119,10 +85,8 @@ We propose the following steps:
     \item \textbf{Comparative Analysis:} Compare learned strategies with theoretical equilibria and evaluate efficiency and stability.
 \end{enumerate}
 
-% =================================================
-\section{Methodology}
-% =================================================
 
+<<<<<<< Updated upstream
 The analytical portion of the project will rely on standard results from noncooperative game theory, including Nash equilibrium existence theorems and best-response analysis. 
 
 The computational portion will involve implementing learning algorithms in Python or MATLAB. We will simulate repeated interactions under varying initializations and learning rates. Performance metrics may include convergence speed, empirical regret, payoff efficiency, and stability of learned strategies.
@@ -156,6 +120,8 @@ We expect this project to:
 % =================================================
 
 This proposal outlines a structured investigation of strategic interaction and adaptive learning in chess. By combining equilibrium analysis with reinforcement learning experiments, we aim to bridge theoretical game-theoretic predictions and algorithmic behavior under repeated play.
+=======
+>>>>>>> Stashed changes
 \bibliographystyle{ieeetr}
 \bibliography{references}
 
