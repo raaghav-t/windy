@@ -89,6 +89,7 @@ We propose the following steps:
     where \( o \in \{1,0,-1\} \) represents stalemate, draw by 50-move rule, or checkmate respectively, 
     \( m \) is the number of moves taken to reach the terminal state, and \( \epsilon > 0 \) is a small weighting parameter to prefer faster mates.
     \item \textbf{Backtracking:} After the graph is computed, find global minima. Then traversing back up the tree will give the optimal set of moves to reach one such minima.
+\end{enumerate}
 
 % =================================================
 \section{Cases}
@@ -111,9 +112,7 @@ We distinguish the following terminal cases:
 & Player 2 captures the rook, the game is over, and neither king can progress. The value of the state is \( +1 \).
 \end{tabular}
 \end{center}
-
 These cases define the boundary conditions for the dynamic programming recursion.
-\end{enumerate}
 
 
 \bibliographystyle{ieeetr}
