@@ -37,23 +37,6 @@
     This project proposes the software implentation of a dynamic program that finds the best outcome for Player 1 in chess endgame. Player 1 has a rook and a king left, whereas Player 2 has only a king. Thus, this is a zero-sum game where Player 1 is trying to checkmate and Player 2 is trying to stalemate. 
 \end{abstract}
 
-% =================================================
-\section{Introduction}
-% =================================================
-
-% Paragraph 1: Problem description
-Brief description of the problem and context.
-
-% Paragraph 2: Literature review (short version)
-Discussion of related work and positioning within the literature.
-
-% Paragraph 3: Contribution
-The main contribution of this paper is:
-\begin{itemize}
-    \item Contribution 1
-    \item Contribution 2
-\end{itemize}
-
 % Final paragraph: Organization
 The remainder of this paper is organized as follows.
 Section~\ref{sec:related} discusses related work.
@@ -79,10 +62,10 @@ We want to find the most optimal path to winning a game of chess, given a rook(H
 We propose the following steps:
 
 \begin{enumerate}
-    \item \textbf{Formal Modeling:} Define xGame in normal-form and, if appropriate, extensive-form representation. Identify strategy spaces and payoff functions.
-    \item \textbf{Equilibrium Analysis:} Characterize pure and mixed Nash equilibria. Analyze existence, uniqueness, and structural properties.
-    \item \textbf{Learning Dynamics:} Implement reinforcement learning agents (e.g., Q-learning or policy-gradient methods) and study convergence behavior under repeated play.
-    \item \textbf{Comparative Analysis:} Compare learned strategies with theoretical equilibria and evaluate efficiency and stability.
+    \item \textbf{Define Action Spaces:} Define the sets of all possible positions for all pieces on the board. 
+    \item \textbf{Define Legal Moves:} Restrict action spaces to allow only legal positions (according to chess rules).
+    \item \textbf{Building the Graph:} 
+    \item \textbf{Backtracking:} .
 \end{enumerate}
 
 
