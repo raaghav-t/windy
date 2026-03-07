@@ -21,16 +21,17 @@ addpath(fullfile(projectRoot, 'solver'));
 addpath(fullfile(projectRoot, 'helper'));
 
 %% Edit position here
-cb = [0 0 0 10 0 0 0 5;
+cb = [0 0 0 0 0 0 0 0;
+      0 0 0  10 0 0 0 0;
+      0 0 0  0 0 0 0 5;
       0 0 0  0 0 0 0 0;
       0 0 0  0 0 0 0 0;
-      0 0 0  0 0 0 0 0;
-      0 0 0  0 0 0 0 0;
-      0 0 0  0 0 0 0 0;
+      0 0 0  0 0 0 0 0 ;
       0 0 0  0 0 0 0 0;
       0 0 0 -10 0 0 0 0];
 
 turn = 1;
+searchDepth = 2; % forecast plies for minimax
 
 %% Quick validation
 if ~isequal(size(cb), [8, 8])
@@ -41,6 +42,9 @@ if nnz(cb == 10) ~= 1 || nnz(cb == 5) ~= 1 || nnz(cb == -10) ~= 1
 end
 if turn ~= 1 && turn ~= -1
     error('turn must be 1 (white) or -1 (black).');
+end
+if searchDepth < 1 || floor(searchDepth) ~= searchDepth
+    error('searchDepth must be a positive integer.');
 end
 
 %% Evaluate current state
@@ -53,6 +57,7 @@ spaceForBlack = oxygenBKing(x);
 distKings = distance(x);
 J = cost(x);
 mate = isCheckmate(x);
+mateStrictTurn = isCheckmate(x, true);
 nextStates = possibleMoves(x);
 
 fprintf('\nState metrics:\n');
@@ -60,7 +65,40 @@ fprintf('  oxygenBKing: %d\n', spaceForBlack);
 fprintf('  distance:    %d\n', distKings);
 fprintf('  cost:        %.4f\n', J);
 fprintf('  isCheckmate: %d\n', mate);
+fprintf('  isCheckmate (strict turn): %d\n', mateStrictTurn);
 fprintf('  #moves:      %d\n', size(nextStates, 2));
+fprintf('  searchDepth: %d ply\n', searchDepth);
+
+if mate && ~mateStrictTurn
+    fprintf('  note: board is checkmate pattern but turn is set to white (1).\n');
+end
+
+%% Depth-limited minimax from root
+[bestDeepState, bestDeepValue, bestDeepIdx, childDeepValues, searchInfo] = minimaxBestMove(x, searchDepth);
+if isempty(bestDeepState)
+    fprintf('\nMinimax: no legal moves from root.\n');
+else
+    fprintf('\nMinimax (%d-ply):\n', searchDepth);
+    fprintf('  best child index: %d\n', bestDeepIdx);
+    fprintf('  best minimax value: %.4f\n', bestDeepValue);
+    fprintf('  expanded nodes: %d\n', searchInfo.nodes);
+    fprintf('  cache hits: %d\n', searchInfo.cacheHits);
+    fprintf('  chosen move board:\n');
+    disp(reshape(bestDeepState(1:64), 8, 8)');
+
+    if turn == 1
+        [~, deepOrder] = sort(childDeepValues, 'ascend');
+    else
+        [~, deepOrder] = sort(childDeepValues, 'descend');
+    end
+
+    fprintf('\nTop 5 children by minimax value:\n');
+    topN = min(5, numel(deepOrder));
+    for i = 1:topN
+        j = deepOrder(i);
+        fprintf('  child %d: minimax=%.4f\n', j, childDeepValues(j));
+    end
+end
 
 %% Plot current board
 figure('Name', 'KRK Current Position');
@@ -74,10 +112,19 @@ else
     childMate = false(1, size(nextStates, 2));
     for k = 1:size(nextStates, 2)
         childCosts(k) = cost(nextStates(:, k));
-        childMate(k) = isCheckmate(nextStates(:, k));
+        childMate(k) = isCheckmate(nextStates(:, k), true);
     end
 
     [~, idx] = sort(childCosts, 'ascend');
+    mateIdx = find(childMate);
+
+    if ~isempty(mateIdx)
+        fprintf('\nMating child states found:\n');
+        for ii = 1:numel(mateIdx)
+            j = mateIdx(ii);
+            fprintf('  child %d: cost=%.4f\n', j, childCosts(j));
+        end
+    end
 
     fprintf('\nTop 5 lowest-cost child states:\n');
     topN = min(5, numel(idx));
@@ -105,17 +152,30 @@ else
     fprintf('  next turn: %d\n', nextStates(65, bestIdx));
 
     % Plot a few forecasted states: best three by side to move.
-    if turn == 1
-        forecastOrder = idx;
+    if ~isempty(bestDeepState)
+        if turn == 1
+            [~, forecastOrder] = sort(childDeepValues, 'ascend');
+        else
+            [~, forecastOrder] = sort(childDeepValues, 'descend');
+        end
     else
-        forecastOrder = idxDesc;
+        if turn == 1
+            forecastOrder = idx;
+        else
+            forecastOrder = idxDesc;
+        end
     end
     nForecast = min(3, numel(forecastOrder));
     figure('Name', 'KRK Forecast States');
     for i = 1:nForecast
         childIdx = forecastOrder(i);
         subplot(1, nForecast, i);
-        plotter(nextStates(:, childIdx), ...
-            sprintf('child %d | cost=%.3f', childIdx, childCosts(childIdx)));
+        if ~isempty(bestDeepState)
+            plotter(nextStates(:, childIdx), ...
+                sprintf('child %d | minimax=%.3f', childIdx, childDeepValues(childIdx)));
+        else
+            plotter(nextStates(:, childIdx), ...
+                sprintf('child %d | cost=%.3f', childIdx, childCosts(childIdx)));
+        end
     end
 end

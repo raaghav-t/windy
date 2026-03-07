@@ -3,6 +3,12 @@
 function moves = possibleMoves(x)
     board = reshape(x(1:64), 8, 8)';
     turn = x(65);
+    moves = zeros(65, 0);
+
+    % Terminal position: do not generate continuations from checkmate.
+    if isCheckmate(x)
+        return;
+    end
 
     [rowW, colW] = find(board == 10, 1);
     [rowR, colR] = find(board == 5, 1);
@@ -12,7 +18,6 @@ function moves = possibleMoves(x)
         error('Board must contain white king (10), white rook (5), and black king (-10).');
     end
 
-    moves = zeros(65, 0);
     nextTurn = -turn;
 
     if turn == 1

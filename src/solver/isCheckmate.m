@@ -1,11 +1,15 @@
 % True when position is checkmate against the black king in K+R vs K.
 % Expects encoded state vector x with x(65) = 1 (white) or -1 (black) to move.
-function mate = isCheckmate(x)
+% Optional second argument enforces black-to-move for strict chess turn logic.
+function mate = isCheckmate(x, requireBlackTurn)
     board = reshape(x(1:64), 8, 8)';
     turn = x(65);
 
-    % In this project, checkmate is only relevant when black is to move.
-    if turn ~= -1
+    if nargin < 2
+        requireBlackTurn = false;
+    end
+
+    if requireBlackTurn && turn ~= -1
         mate = false;
         return;
     end
