@@ -200,7 +200,9 @@ cb_positions = {
  0 0 0 0 0 0 -10 0];
 };
 
-krkGif(cb_positions{2}, 1, 10, 60, sprintf("deep%d_test.gif", 2));
-% for i=1:length(cb_positions)
-%     krkGif(cb_positions{i}, 1, 4, 60, sprintf("%d_test.gif", i));
-% end
+% krkGif(cb_positions{2}, 1, 10, 60, sprintf("deep%d_test.gif", 2));
+for i=1:length(cb_positions)
+    tic
+    krkGif(cb_positions{i}, 1, 4, 60, sprintf("real%d_test.gif", i));
+    toc
+end
