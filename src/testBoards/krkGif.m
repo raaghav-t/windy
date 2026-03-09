@@ -2,11 +2,13 @@
 % writing each board frame to a GIF.
 %
 % Usage:
-%   result = krkGif(cb, turn, searchDepth, maxPlies, gifFilename, frameDelay)
+%   result = krkGif(cb, turnOrCounter, searchDepth, maxPlies, gifFilename, frameDelay)
 %
 % Inputs:
 %   cb          - 8x8 board matrix (10 white king, 5 white rook, -10 black king).
-%   turn        - 1 for white to move, -1 for black to move.
+%   turnOrCounter - recommended: nonnegative move counter
+%                   even = white to move, odd = black to move
+%                   legacy +1/-1 also accepted by encoder
 %   searchDepth - minimax depth in plies (>=1).
 %   maxPlies    - maximum plies to simulate.
 %   gifFilename - output GIF path, e.g., 'krk_sim.gif'.
@@ -15,7 +17,7 @@
 % Output:
 %   result struct with fields:
 %     finalState, history, costs, endedBy, pliesPlayed, gifFilename
-function result = krkGif(cb, turn, searchDepth, maxPlies, gifFilename, frameDelay)
+function result = krkGif(cb, turnOrCounter, searchDepth, maxPlies, gifFilename, frameDelay)
     % ----------------------------
     % Default argument handling
     % ----------------------------
@@ -38,8 +40,8 @@ function result = krkGif(cb, turn, searchDepth, maxPlies, gifFilename, frameDela
     if ~isequal(size(cb), [8, 8])
         error('cb must be 8x8.');
     end
-    if turn ~= 1 && turn ~= -1
-        error('turn must be 1 or -1.');
+    if ~isscalar(turnOrCounter)
+        error('turnOrCounter must be scalar.');
     end
     if searchDepth < 1 || floor(searchDepth) ~= searchDepth
         error('searchDepth must be a positive integer.');
@@ -55,7 +57,7 @@ function result = krkGif(cb, turn, searchDepth, maxPlies, gifFilename, frameDela
     addpath(fullfile(projectRoot, 'helper'));
 
     % Initialize root state and bookkeeping arrays.
-    x = encoder(cb, turn);
+    x = encoder(cb, turnOrCounter);
     history = x;
     costs = cost(x);
     endedBy = 'maxPlies';
@@ -66,13 +68,17 @@ function result = krkGif(cb, turn, searchDepth, maxPlies, gifFilename, frameDela
     for ply = 0:maxPlies
         % Decode current state for display/annotation.
         boardNow = reshape(x(1:64), 8, 8)';
-        turnNow = x(65);
+        if mod(x(65), 2) == 0
+            turnNow = 1;
+        else
+            turnNow = -1;
+        end
         mateNow = isCheckmate(x, true);
         J = cost(x);
 
         % Draw current frame.
         clf(fig);
-        plotter(boardNow, sprintf('ply %d | turn=%d | cost=%.2f | mate=%d', ply, turnNow, J, mateNow));
+        plotter(boardNow, sprintf('ply %d | turn=%d | ctr=%d | cost=%.2f | mate=%d', ply, turnNow, x(65), J, mateNow));
         drawnow;
 
         % Capture frame and append to GIF.

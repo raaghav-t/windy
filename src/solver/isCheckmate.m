@@ -10,7 +10,7 @@
 function mate = isCheckmate(x, requireBlackTurn)
     % Decode board and side-to-move.
     board = reshape(x(1:64), 8, 8)';
-    turn = x(65);
+    turn = turnFromCounter(x(65));
 
     % Default behavior: pattern-based detection (not strict about turn).
     if nargin < 2
@@ -150,4 +150,14 @@ function tf = rookAttacksSquare(rowR, colR, row, col, rowW, colW)
         r = r + step;
     end
     tf = true;
+end
+
+function t = turnFromCounter(counter)
+    % Counter decoder:
+    %   even -> white (+1), odd -> black (-1)
+    if mod(counter, 2) == 0
+        t = 1;
+    else
+        t = -1;
+    end
 end

@@ -9,7 +9,7 @@
 %                      false -> board-pattern stalemate check regardless of turn
 function stale = isStalemate(x, requireBlackTurn)
     board = reshape(x(1:64), 8, 8)';
-    turn = x(65);
+    turn = turnFromCounter(x(65));
 
     if nargin < 2
         requireBlackTurn = false;
@@ -36,4 +36,14 @@ function stale = isStalemate(x, requireBlackTurn)
     end
 
     stale = isempty(possibleMoves(x));
+end
+
+function t = turnFromCounter(counter)
+    % Counter decoder:
+    %   even -> white (+1), odd -> black (-1)
+    if mod(counter, 2) == 0
+        t = 1;
+    else
+        t = -1;
+    end
 end

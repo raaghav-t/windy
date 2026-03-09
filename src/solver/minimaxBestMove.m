@@ -46,7 +46,7 @@ function [bestState, bestValue, bestIdx, childValues, info] = minimaxBestMove(x,
 
     % Tactical shortcut:
     % if white can deliver immediate mate, choose it directly.
-    if x(65) == 1
+    if turnFromCounter(x(65)) == 1
         mateChildren = false(1, nChildren);
         for k = 1:nChildren
             mateChildren(k) = isCheckmate(children(:, k), true);
@@ -65,7 +65,7 @@ function [bestState, bestValue, bestIdx, childValues, info] = minimaxBestMove(x,
     childValues = zeros(1, nChildren);
 
     % Initialize root best value based on side to move.
-    if x(65) == 1
+    if turnFromCounter(x(65)) == 1
         bestValue = inf;
     else
         bestValue = -inf;
@@ -80,7 +80,7 @@ function [bestState, bestValue, bestIdx, childValues, info] = minimaxBestMove(x,
 
         % Root move selection:
         % white picks minimum, black picks maximum.
-        if x(65) == 1
+        if turnFromCounter(x(65)) == 1
             if value < bestValue
                 bestValue = value;
                 bestIdx = k;
@@ -135,10 +135,10 @@ function [value, nodes, cacheHits] = minimaxValue(x, depth, alpha, beta)
     end
 
     % Move ordering: try promising moves first to improve alpha-beta pruning.
-    orderedIdx = orderMoves(children, x(65));
+    orderedIdx = orderMoves(children, turnFromCounter(x(65)));
     children = children(:, orderedIdx);
 
-    if x(65) == 1
+    if turnFromCounter(x(65)) == 1
         % White node: minimizing.
         value = inf;
         for k = 1:size(children, 2)
@@ -205,6 +205,16 @@ function idx = orderMoves(children, turnAtNode)
     else
         % Black to move: likely best children are higher-cost first.
         [~, idx] = sort(scores, 'descend');
+    end
+end
+
+function t = turnFromCounter(counter)
+    % Counter decoder:
+    %   even -> white (+1), odd -> black (-1)
+    if mod(counter, 2) == 0
+        t = 1;
+    else
+        t = -1;
     end
 end
 

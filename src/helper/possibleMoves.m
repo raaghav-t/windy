@@ -8,7 +8,8 @@
 function moves = possibleMoves(x)
     % Decode state.
     board = reshape(x(1:64), 8, 8)';
-    turn = x(65);
+    turnCounter = x(65);
+    turn = turnFromCounter(turnCounter);
 
     % Start with empty child list; append columns as legal moves are found.
     moves = zeros(65, 0);
@@ -34,8 +35,8 @@ function moves = possibleMoves(x)
         return;
     end
 
-    % Side to move flips after any legal move.
-    nextTurn = -turn;
+    % Side to move flips by incrementing move counter.
+    nextCounter = turnCounter + 1;
 
     if turn == 1
         % =============================================================
@@ -72,7 +73,7 @@ function moves = possibleMoves(x)
                 nextBoard = board;
                 nextBoard(rowW, colW) = 0;
                 nextBoard(r, c) = 10;
-                moves(:, end + 1) = encodeState(nextBoard, nextTurn);
+                moves(:, end + 1) = encodeState(nextBoard, nextCounter);
             end
         end
 
@@ -96,7 +97,7 @@ function moves = possibleMoves(x)
                 nextBoard = board;
                 nextBoard(rowR, colR) = 0;
                 nextBoard(r, c) = 5;
-                moves(:, end + 1) = encodeState(nextBoard, nextTurn);
+                moves(:, end + 1) = encodeState(nextBoard, nextCounter);
 
                 r = r + dr;
                 c = c + dc;
@@ -155,22 +156,32 @@ function moves = possibleMoves(x)
                     nextBoard(rowR, colR) = 0;
                 end
                 nextBoard(r, c) = -10;
-                moves(:, end + 1) = encodeState(nextBoard, nextTurn);
+                moves(:, end + 1) = encodeState(nextBoard, nextCounter);
             end
         end
     end
 end
 
 % Encode local board+turn into shared 65x1 state format.
-function y = encodeState(board, turn)
+function y = encodeState(board, counter)
     y = board';
     y = y(:);
-    y = [y; turn];
+    y = [y; counter];
 end
 
 % Bounds helper for board indices.
 function tf = inBounds(r, c)
     tf = (r >= 1) && (r <= 8) && (c >= 1) && (c <= 8);
+end
+
+function t = turnFromCounter(counter)
+    % Counter decoder:
+    %   even -> white (+1), odd -> black (-1)
+    if mod(counter, 2) == 0
+        t = 1;
+    else
+        t = -1;
+    end
 end
 
 % White attacks a square if white king adjacent, or rook attacks along ray.

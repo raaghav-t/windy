@@ -13,9 +13,12 @@
 %  -10  = black king
 %    0  = empty square
 %
-% Turn encoding:
-%    1  = white to move
-%   -1  = black to move
+% Turn/counter encoding (recommended):
+%   moveCounter even  -> white to move
+%   moveCounter odd   -> black to move
+%
+% Backward compatibility:
+%   turnOrCounter = 1 or -1 is also accepted by encoder.
 
 clear;
 clc;
@@ -36,7 +39,7 @@ cb = [0 0 0 0 0 0 0 0;
       0 0 0  0 0 0 0 0;
       0 0 0 -10 0 0 0 0];
 
-turn = 1;
+turnOrCounter = 0;
 searchDepth = 4; % forecast plies for minimax
 
 %% Quick validation
@@ -47,8 +50,8 @@ end
 if nnz(cb == 10) ~= 1 || nnz(cb == 5) ~= 1 || nnz(cb == -10) ~= 1
     error('Board must contain exactly one white king (10), one white rook (5), and one black king (-10).');
 end
-if turn ~= 1 && turn ~= -1
-    error('turn must be 1 (white) or -1 (black).');
+if ~isscalar(turnOrCounter)
+    error('turnOrCounter must be scalar.');
 end
 if searchDepth < 1 || floor(searchDepth) ~= searchDepth
     error('searchDepth must be a positive integer.');
@@ -56,10 +59,16 @@ end
 
 %% Evaluate current state
 % Encode board into shared state format and compute root diagnostics.
-x = encoder(cb, turn);
+x = encoder(cb, turnOrCounter);
 fprintf('Current position:\n');
 disp(cb);
-fprintf('Turn: %d (1=white, -1=black)\n', turn);
+if mod(x(65), 2) == 0
+    rootTurn = 1;
+else
+    rootTurn = -1;
+end
+fprintf('Turn: %d (1=white, -1=black)\n', rootTurn);
+fprintf('Counter x(65): %d\n', x(65));
 
 spaceForBlack = oxygenBKing(x);
 distKings = distance(x);
@@ -95,7 +104,7 @@ else
     fprintf('  chosen move board:\n');
     disp(reshape(bestDeepState(1:64), 8, 8)');
 
-    if turn == 1
+    if rootTurn == 1
         [~, deepOrder] = sort(childDeepValues, 'ascend');
     else
         [~, deepOrder] = sort(childDeepValues, 'descend');
@@ -112,7 +121,7 @@ end
 %% Plot current board
 % Visual snapshot of root position.
 figure('Name', 'KRK Current Position');
-plotter(cb, sprintf('Current Position (turn=%d)', turn));
+plotter(cb, sprintf('Current Position (turn=%d, counter=%d)', rootTurn, x(65)));
 
 %% Evaluate immediate children by cost
 % One-ply view (for debugging heuristics independently of deep search).
@@ -156,7 +165,7 @@ else
 
     % Baseline 1-ply decision (not deep minimax).
     fprintf('\nBest child by side to move:\n');
-    if turn == 1
+    if rootTurn == 1
         bestIdx = idx(1); % white minimizes
     else
         bestIdx = idxDesc(1); % black maximizes
@@ -168,13 +177,13 @@ else
     % Plot a few forecasted states.
     % Prefer deep minimax ordering when available; fallback to one-ply cost.
     if ~isempty(bestDeepState)
-        if turn == 1
+        if rootTurn == 1
             [~, forecastOrder] = sort(childDeepValues, 'ascend');
         else
             [~, forecastOrder] = sort(childDeepValues, 'descend');
         end
     else
-        if turn == 1
+        if rootTurn == 1
             forecastOrder = idx;
         else
             forecastOrder = idxDesc;
