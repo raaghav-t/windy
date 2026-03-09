@@ -41,6 +41,24 @@ function [bestState, bestValue, bestIdx, childValues, info] = minimaxBestMove(x,
         return;
     end
 
+    % Tactical shortcut:
+    % if white can deliver immediate mate, choose it directly.
+    if x(65) == 1
+        mateChildren = false(1, nChildren);
+        for k = 1:nChildren
+            mateChildren(k) = isCheckmate(children(:, k), true);
+        end
+        if any(mateChildren)
+            bestIdx = find(mateChildren, 1, 'first');
+            bestState = children(:, bestIdx);
+            bestValue = -1e6;
+            childValues = inf(1, nChildren);
+            childValues(mateChildren) = -1e6;
+            info = struct('nodes', 0, 'cacheHits', 0);
+            return;
+        end
+    end
+
     % Transposition cache:
     % key = (depth, full state vector), value = minimax value.
     cache = containers.Map('KeyType', 'char', 'ValueType', 'double');
@@ -66,10 +84,16 @@ function [bestState, bestValue, bestIdx, childValues, info] = minimaxBestMove(x,
             if value < bestValue
                 bestValue = value;
                 bestIdx = k;
+            elseif value == bestValue && cost(children(:, k)) < cost(children(:, bestIdx))
+                % Tie-break toward better immediate heuristic.
+                bestIdx = k;
             end
         else
             if value > bestValue
                 bestValue = value;
+                bestIdx = k;
+            elseif value == bestValue && cost(children(:, k)) > cost(children(:, bestIdx))
+                % Tie-break toward better immediate heuristic.
                 bestIdx = k;
             end
         end
