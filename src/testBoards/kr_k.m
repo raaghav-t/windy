@@ -1,5 +1,11 @@
-% KRK test harness
-% Edit only `cb` and `turn` below, then run this script.
+% KR_K TEST HARNESS
+% -----------------
+% Interactive debugging script for KRK solver components.
+%
+% Primary workflow:
+%   1) edit `cb`, `turn`, `searchDepth`
+%   2) run this script
+%   3) inspect console metrics + plots
 %
 % Piece encoding:
 %   10  = white king
@@ -14,7 +20,7 @@
 clear;
 clc;
 
-% Add project source folders so this script can call solver/helper functions.
+% Resolve project-relative paths so this script can be run from anywhere.
 thisFileDir = fileparts(mfilename('fullpath'));
 projectRoot = fileparts(thisFileDir);
 addpath(fullfile(projectRoot, 'solver'));
@@ -31,9 +37,10 @@ cb = [0 0 0 0 0 0 0 0;
       0 0 0 -10 0 0 0 0];
 
 turn = 1;
-searchDepth = 2; % forecast plies for minimax
+searchDepth = 4; % forecast plies for minimax
 
 %% Quick validation
+% Keep tests explicit and friendly before calling solver.
 if ~isequal(size(cb), [8, 8])
     error('Board must be 8x8.');
 end
@@ -48,6 +55,7 @@ if searchDepth < 1 || floor(searchDepth) ~= searchDepth
 end
 
 %% Evaluate current state
+% Encode board into shared state format and compute root diagnostics.
 x = encoder(cb, turn);
 fprintf('Current position:\n');
 disp(cb);
@@ -74,6 +82,7 @@ if mate && ~mateStrictTurn
 end
 
 %% Depth-limited minimax from root
+% Evaluate children by deeper lookahead, not just immediate heuristic.
 [bestDeepState, bestDeepValue, bestDeepIdx, childDeepValues, searchInfo] = minimaxBestMove(x, searchDepth);
 if isempty(bestDeepState)
     fprintf('\nMinimax: no legal moves from root.\n');
@@ -101,10 +110,12 @@ else
 end
 
 %% Plot current board
+% Visual snapshot of root position.
 figure('Name', 'KRK Current Position');
 plotter(cb, sprintf('Current Position (turn=%d)', turn));
 
 %% Evaluate immediate children by cost
+% One-ply view (for debugging heuristics independently of deep search).
 if isempty(nextStates)
     fprintf('\nNo legal next moves from this position.\n');
 else
@@ -115,6 +126,7 @@ else
         childMate(k) = isCheckmate(nextStates(:, k), true);
     end
 
+    % Immediate best-to-worst ranking by static cost.
     [~, idx] = sort(childCosts, 'ascend');
     mateIdx = find(childMate);
 
@@ -133,6 +145,7 @@ else
         fprintf('  child %d: cost=%.4f, isCheckmate=%d\n', j, childCosts(j), childMate(j));
     end
 
+    % Worst-to-best for contrast/debugging.
     fprintf('\nTop 5 highest-cost child states:\n');
     [~, idxDesc] = sort(childCosts, 'descend');
     topN = min(5, numel(idxDesc));
@@ -141,6 +154,7 @@ else
         fprintf('  child %d: cost=%.4f, isCheckmate=%d\n', j, childCosts(j), childMate(j));
     end
 
+    % Baseline 1-ply decision (not deep minimax).
     fprintf('\nBest child by side to move:\n');
     if turn == 1
         bestIdx = idx(1); % white minimizes
@@ -151,7 +165,8 @@ else
     disp(reshape(nextStates(1:64, bestIdx), 8, 8)');
     fprintf('  next turn: %d\n', nextStates(65, bestIdx));
 
-    % Plot a few forecasted states: best three by side to move.
+    % Plot a few forecasted states.
+    % Prefer deep minimax ordering when available; fallback to one-ply cost.
     if ~isempty(bestDeepState)
         if turn == 1
             [~, forecastOrder] = sort(childDeepValues, 'ascend');
@@ -171,9 +186,11 @@ else
         childIdx = forecastOrder(i);
         subplot(1, nForecast, i);
         if ~isempty(bestDeepState)
+            % Label with deep minimax value.
             plotter(nextStates(:, childIdx), ...
                 sprintf('child %d | minimax=%.3f', childIdx, childDeepValues(childIdx)));
         else
+            % Label with immediate heuristic cost.
             plotter(nextStates(:, childIdx), ...
                 sprintf('child %d | cost=%.3f', childIdx, childCosts(childIdx)));
         end
