@@ -25,6 +25,9 @@ function [bestState, bestValue, bestIdx, childValues, info] = minimaxBestMove(x,
         error('depth must be a positive integer.');
     end
 
+    % Ensure persistent transposition table exists.
+    ttEnsure();
+
     % Generate all legal immediate children.
     children = possibleMoves(x);
     nChildren = size(children, 2);
@@ -59,9 +62,6 @@ function [bestState, bestValue, bestIdx, childValues, info] = minimaxBestMove(x,
         end
     end
 
-    % Transposition cache:
-    % key = (depth, full state vector), value = minimax value.
-    cache = containers.Map('KeyType', 'char', 'ValueType', 'double');
     childValues = zeros(1, nChildren);
 
     % Initialize root best value based on side to move.
@@ -73,7 +73,7 @@ function [bestState, bestValue, bestIdx, childValues, info] = minimaxBestMove(x,
 
     % Evaluate each child by searching remaining depth-1 plies.
     for k = 1:nChildren
-        [value, nodes, hits, cache] = minimaxValue(children(:, k), depth - 1, -inf, inf, cache);
+        [value, nodes, hits] = minimaxValue(children(:, k), depth - 1, -inf, inf);
         childValues(k) = value;
         info.nodes = info.nodes + nodes;
         info.cacheHits = info.cacheHits + hits;
@@ -104,15 +104,16 @@ function [bestState, bestValue, bestIdx, childValues, info] = minimaxBestMove(x,
 end
 
 % Recursive alpha-beta minimax.
-function [value, nodes, cacheHits, cache] = minimaxValue(x, depth, alpha, beta, cache)
+function [value, nodes, cacheHits] = minimaxValue(x, depth, alpha, beta)
     % Count this node.
     nodes = 1;
     cacheHits = 0;
 
     % Use cached value if this (state, depth) was already solved.
     key = stateKey(x, depth);
-    if isKey(cache, key)
-        value = cache(key);
+    [hit, cachedValue] = ttGet(key);
+    if hit
+        value = cachedValue;
         cacheHits = 1;
         return;
     end
@@ -120,7 +121,7 @@ function [value, nodes, cacheHits, cache] = minimaxValue(x, depth, alpha, beta, 
     % Leaf evaluation cutoff before move generation is essential for speed.
     if depth == 0
         value = cost(x);
-        cache(key) = value;
+        ttPut(key, value);
         return;
     end
 
@@ -129,7 +130,7 @@ function [value, nodes, cacheHits, cache] = minimaxValue(x, depth, alpha, beta, 
     if isempty(children)
         % No legal moves: treat as terminal and evaluate board.
         value = cost(x);
-        cache(key) = value;
+        ttPut(key, value);
         return;
     end
 
@@ -141,7 +142,7 @@ function [value, nodes, cacheHits, cache] = minimaxValue(x, depth, alpha, beta, 
         % White node: minimizing.
         value = inf;
         for k = 1:size(children, 2)
-            [childValue, childNodes, childHits, cache] = minimaxValue(children(:, k), depth - 1, alpha, beta, cache);
+            [childValue, childNodes, childHits] = minimaxValue(children(:, k), depth - 1, alpha, beta);
             nodes = nodes + childNodes;
             cacheHits = cacheHits + childHits;
 
@@ -161,7 +162,7 @@ function [value, nodes, cacheHits, cache] = minimaxValue(x, depth, alpha, beta, 
         % Black node: maximizing.
         value = -inf;
         for k = 1:size(children, 2)
-            [childValue, childNodes, childHits, cache] = minimaxValue(children(:, k), depth - 1, alpha, beta, cache);
+            [childValue, childNodes, childHits] = minimaxValue(children(:, k), depth - 1, alpha, beta);
             nodes = nodes + childNodes;
             cacheHits = cacheHits + childHits;
 
@@ -180,7 +181,7 @@ function [value, nodes, cacheHits, cache] = minimaxValue(x, depth, alpha, beta, 
     end
 
     % Save solved value for future transposition hits.
-    cache(key) = value;
+    ttPut(key, value);
 end
 
 % Build deterministic cache key from depth and full state vector.
@@ -204,5 +205,55 @@ function idx = orderMoves(children, turnAtNode)
     else
         % Black to move: likely best children are higher-cost first.
         [~, idx] = sort(scores, 'descend');
+    end
+end
+
+% ----------------------------
+% Persistent transposition table helpers
+% ----------------------------
+function ttEnsure()
+    ttStore('ensure');
+end
+
+function [hit, value] = ttGet(key)
+    [hit, value] = ttStore('get', key);
+end
+
+function ttPut(key, value)
+    ttStore('put', key, value);
+end
+
+function [out1, out2] = ttStore(op, key, value)
+    persistent TT
+    if isempty(TT)
+        TT = containers.Map('KeyType', 'char', 'ValueType', 'double');
+    end
+
+    out1 = [];
+    out2 = [];
+
+    if strcmp(op, 'ensure')
+        return;
+    end
+
+    if strcmp(op, 'clear')
+        TT = containers.Map('KeyType', 'char', 'ValueType', 'double');
+        return;
+    end
+
+    if strcmp(op, 'get')
+        if isKey(TT, key)
+            out1 = true;
+            out2 = TT(key);
+        else
+            out1 = false;
+            out2 = 0;
+        end
+        return;
+    end
+
+    if strcmp(op, 'put')
+        TT(key) = value;
+        return;
     end
 end
